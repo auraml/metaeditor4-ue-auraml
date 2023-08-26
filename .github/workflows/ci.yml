@@ -1,0 +1,31 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+    tags:
+      - "v*.*.*"
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+          registry-url: https://registry.npmjs.org
+
+      - name: Installing Dependencies
+        run: npm i
+
+      - name: Publish
+        uses: JS-DevTools/npm-publish@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          access: "public"
+          token: "${{ secrets.NPM_AUTH_TOKEN }}"
